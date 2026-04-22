@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детектив — Книжный магазин</title>
+    <style>
+        /* ===== СБРОС И БАЗОВЫЕ СТИЛИ ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a0a2e;
+            --primary-light: #2d1b4e;
+            --accent: #e8a838;
+            --accent-hover: #f0c060;
+            --red: #c0392b;
+            --red-light: #e74c3c;
+            --gold: #f1c40f;
+            --text-light: #f5f0e8;
+            --text-muted: #b8a9c9;
+            --card-bg: #231340;
+            --card-hover: #2e1a52;
+            --gradient-hero: linear-gradient(135deg, #1a0a2e 0%, #3d1f6d 50%, #1a0a2e 100%);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary);
+            color: var(--text-light);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== АНИМАЦИИ ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rotateIn {
+            from {
+                opacity: 0;
+                transform: rotate(-10deg) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: rotate(0) scale(1);
+            }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== НАВИГАЦИЯ ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 0;
+            transition: var(--transition);
+            background: transparent;
+        }
+
+        .navbar.scrolled {
+            background: rgba(26, 10, 46, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 10px 0;
+            box-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo span {
+            background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+
+        .burger span {
+            width: 28px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .burger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 6px);
+        }
+
+        .burger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -6px);
+        }
+
+        /* ===== HERO СЕКЦИЯ ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-hero);
+            position: relative;
+            overflow: hidden;
+            padding: 120px 20px 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(232, 168, 56, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(192, 57, 43, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(104, 56, 168, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; animation-duration: 7s; }
+        .particle:nth-child(2) { top: 60%; left: 25%; animation-delay: 1s; animation-duration: 5s; }
+        .particle:nth-child(3) { top: 30%; left: 70%; animation-delay: 2s; animation-duration: 8s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: 0.5s; animation-duration: 6s; }
+        .particle:nth-child(5) { top: 40%; left: 50%; animation-delay: 1.5s; animation-duration: 9s; }
+        .particle:nth-child(6) { top: 80%; left: 40%; animation-delay: 3s; animation-duration: 7s; }
+        .particle:nth-child(7) { top: 15%; left: 85%; animation-delay: 2.5s; animation-duration: 5.5s; }
+        .particle:nth-child(8) { top: 50%; left: 5%; animation-delay: 0.8s; animation-duration: 8.5s; }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(232, 168, 56, 0.15);
+            border: 1px solid rgba(232, 168, 56, 0.3);
+            color: var(--accent);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease 0.3s both;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 25px;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--accent), var(--red-light), var(--gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease 0.7s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.9s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            color: var(--primary);
+            box-shadow: 0 4px 25px rgba(232, 168, 56, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px rgba(232, 168, 56, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid rgba(245, 240, 232, 0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 60px;
+            animation: fadeInUp 1s ease 1.1s both;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: float 2s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        .scroll-indicator a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            transform: rotate(45deg);
+        }
+
+        /* ===== СЕКЦИЯ «О КОМПАНИИ» ===== */
+        .about {
+            padding: 120px 0;
+            background: var(--primary);
+            position: relative;
+        }
+
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .about-image-inner {
+            font-size: 8rem;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 20px 40px rgba(232, 168, 56, 0.2));
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid rgba(232, 168, 56, 0.2);
+            border-radius: 20px;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        .about-text h3 span {
+            color: var(--accent);
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .about-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(232, 168, 56, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(232, 168, 56, 0.1);
+            transition: var(--transition);
+        }
+
+        .about-feature:hover {
+            background: rgba(232, 168, 56, 0.1);
+            border-color: rgba(232, 168, 56, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .about-feature-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .about-feature span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        /* ===== КАТАЛОГ КНИГ ===== */
+        .catalog {
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            position: relative;
+        }
+
+        .catalog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .catalog-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(245, 240, 232, 0.15);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent);
+            color: var(--primary);
+            border-color: var(--accent);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .book-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(245, 240, 232, 0.05);
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+            border-color: rgba(232, 168, 56, 0.2);
+            background: var(--card-hover);
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--red);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .book-cover {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, var(--card-bg));
+        }
+
+        .book-emoji {
+            font-size: 6rem;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card:hover .book-emoji {
+            transform: scale(1.15) rotate(-3deg);
+        }
+
+        .book-info {
+            padding: 25px;
+        }
+
+        .book-genre {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .book-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(245, 240, 232, 0.08);
+        }
+
+        .book-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .book-price .old-price {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+
+        .book-rating {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+
+        .book-btn {
+            display: block;
+            width: calc(100% - 50px);
+            margin: 0 25px 25px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .book-card:hover .book-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .book-btn:hover {
+            box-shadow: 0 4px 20px rgba(232, 168, 56, 0.4);
+        }
+
+        /* ===== ПРЕИМУЩЕСТВА ===== */
+        .features {
+            padding: 120px 0;
+            background: var(--primary-light);
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 40px 25px;
+            background: rgba(26, 10, 46, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(232, 168, 56, 0.08);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(232, 168, 56, 0.3);
+            background: rgba(26, 10, 46, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .feature-card:nth-child(2) .feature-icon { animation-delay: 0.5s; }
+        .feature-card:nth-child(3) .feature-icon { animation-delay: 1s; }
+        .feature-card:nth-child(4) .feature-icon { animation-delay: 1.5s; }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+            color: var(--text-light);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ===== КОНТАКТЫ ===== */
+        .contacts {
+            padding: 120px 0;
+            background: var(--primary);
+            position: relative;
+        }
+
+        .contacts::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .contacts-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .contacts-info h3 span {
+            color: var(--accent);
+        }
+
+        .contacts-info > p {
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-size: 1.05rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(232, 168, 56, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(232, 168, 56, 0.08);
+            transition: var(--transition);
+        }
+
+        .contact-item:hover {
+            border-color: rgba(232, 168, 56, 0.2);
+            transform: translateX(5px);
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(232, 168, 56, 0.1);
+            border-radius: 12px;
+        }
+
+        .contact-details h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+
+        .contact-details p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .contact-form {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(232, 168, 56, 0.1);
+        }
+
+        .contact-form h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(245, 240, 232, 0.1);
+            background: rgba(26, 10, 46, 0.5);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(232, 168, 56, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(184, 169, 201, 0.5);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(232, 168, 56, 0.4);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 50px 0 30px;
+            background: var(--primary);
+            border-top: 1px solid rgba(232, 168, 56, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(232, 168, 56, 0.1);
+            border: 1px solid rgba(232, 168, 56, 0.15);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(245, 240, 232, 0.05);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .about-grid {
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 75%;
+                max-width: 350px;
+                height: 100vh;
+                background: rgba(26, 10, 46, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 30px;
+                transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+            }
+
+            .nav-links.open {
+                right: 0;
+            }
+
+            .nav-links a {
+                font-size: 1.2rem;
+            }
+
+            .burger {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: clamp(2rem, 8vw, 3rem);
+            }
+
+            .hero-stats {
+                gap: 30px;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .about-image {
+                order: -1;
+                max-height: 300px;
+            }
+
+            .about-features {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                padding: 25px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .catalog-filters {
+                gap: 8px;
+            }
+
+            .filter-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ===== OVERLAY ДЛЯ МОБИЛЬНОГО МЕНЮ ===== */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#hero" class="logo">
+                <span class="logo-icon">🔍</span>
+                <span>ДЕТЕКТИВ</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" onclick="closeMenu()">Главная</a></li>
+                <li><a href="#about" onclick="closeMenu()">О нас</a></li>
+                <li><a href="#catalog" onclick="closeMenu()">Каталог</a></li>
+                <li><a href="#features" onclick="closeMenu()">Преимущества</a></li>
+                <li><a href="#contacts" onclick="closeMenu()">Контакты</a></li>
+            </ul>
+            <div class="burger" id="burger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    <div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">📚 Книжный магазин №1</div>
+            <h1>Раскройте <span class="highlight">загадку</span> вместе с лучшими детективами</h1>
+            <p>Погрузитесь в мир интриг, расследований и неожиданных развязок. Более 10 000 детективных романов от классики до современных бестселлеров.</p>
+            <div class="hero-buttons">
+                <a href="#catalog" class="btn btn-primary">📖 Смотреть каталог</a>
+                <a href="#about" class="btn btn-secondary">Узнать больше →</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">10 000+</span>
+                    <span class="stat-label">Книг в наличии</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50 000+</span>
+                    <span class="stat-label">Счастливых читателей</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">15 лет</span>
+                    <span class="stat-label">На рынке</span>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <a href="#about">
+                <span>Листайте</span>
+                <div class="scroll-arrow"></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- О КОМПАНИИ -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">О компании</span>
+                <h2 class="section-title">Больше, чем просто книжный магазин</h2>
+                <p class="section-subtitle">Мы создаём уникальное пространство для любителей детективного жанра</p>
+            </div>
+            <div class="about-grid">
+                <div class="about-image animate-on-scroll">
+                    <div class="about-image-inner">📖</div>
+                </div>
+                <div class="about-text animate-on-scroll">
+                    <h3>Мы знаем о детективах <span>всё</span></h3>
+                    <p>Книжный магазин «Детектив» — это место, где каждый любитель остросюжетных историй найдёт книгу по душе. С 2011 года мы собираем лучшие детективные романы со всего мира.</p>
+                    <p>Наша команда профессиональных книголюбов тщательно отбирает каждую позицию, чтобы вы получили только самые захватывающие истории с непредсказуемыми финалами.</p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🎯</span>
+                            <span>Экспертный подбор книг</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🌍</span>
+                            <span>Книги со всего мира</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">⭐</span>
+                            <span>Рейтинги и рецензии</span>
+                        </div>
+                        <div class="about-feature">
+                            <span class="about-feature-icon">🚀</span>
+                            <span>Быстрая доставка</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КАТАЛОГ -->
+    <section class="catalog" id="catalog">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">Каталог</span>
+                <h2 class="section-title">Популярные книги</h2>
+                <p class="section-subtitle">Бестселлеры, которые не отпускают до последней страницы</p>
+            </div>
+            <div class="catalog-filters animate-on-scroll">
+                <button class="filter-btn active">Все</button>
+                <button class="filter-btn">Классика</button>
+                <button class="filter-btn">Триллеры</button>
+                <button class="filter-btn">Нуар</button>
+                <button class="filter-btn">Новинки</button>
+            </div>
+            <div class="books-grid">
+                <!-- Книга 1 -->
+                <div class="book-card animate-on-scroll">
+                    <span class="book-badge">Хит</span>
+                    <div class="book-cover">
+                        <span class="book-emoji">🕵️</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Классический детектив</span>
+                        <h3 class="book-title">Десять негритят</h3>
+                        <p class="book-author">Агата Кристи</p>
+                        <div class="book-footer">
+                            <span class="book-price">590 ₽ <span class="old-price">790 ₽</span></span>
+                            <span class="book-rating">★★★★★ 4.9</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 2 -->
+                <div class="book-card animate-on-scroll">
+                    <div class="book-cover">
+                        <span class="book-emoji">🔪</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Психологический триллер</span>
+                        <h3 class="book-title">Девушка с татуировкой дракона</h3>
+                        <p class="book-author">Стиг Ларссон</p>
+                        <div class="book-footer">
+                            <span class="book-price">650 ₽</span>
+                            <span class="book-rating">★★★★★ 4.8</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 3 -->
+                <div class="book-card animate-on-scroll">
+                    <span class="book-badge">Новинка</span>
+                    <div class="book-cover">
+                        <span class="book-emoji">🌙</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Нуар</span>
+                        <h3 class="book-title">Долгий сон</h3>
+                        <p class="book-author">Рэймонд Чандлер</p>
+                        <div class="book-footer">
+                            <span class="book-price">480 ₽</span>
+                            <span class="book-rating">★★★★☆ 4.7</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 4 -->
+                <div class="book-card animate-on-scroll">
+                    <div class="book-cover">
+                        <span class="book-emoji">🏚️</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Триллер</span>
+                        <h3 class="book-title">Молчание ягнят</h3>
+                        <p class="book-author">Томас Харрис</p>
+                        <div class="book-footer">
+                            <span class="book-price">520 ₽ <span class="old-price">690 ₽</span></span>
+                            <span class="book-rating">★★★★★ 4.9</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 5 -->
+                <div class="book-card animate-on-scroll">
+                    <span class="book-badge">−30%</span>
+                    <div class="book-cover">
+                        <span class="book-emoji">🧩</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Классика</span>
+                        <h3 class="book-title">Собака Баскервилей</h3>
+                        <p class="book-author">Артур Конан Дойл</p>
+                        <div class="book-footer">
+                            <span class="book-price">420 ₽ <span class="old-price">600 ₽</span></span>
+                            <span class="book-rating">★★★★★ 4.8</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 6 -->
+                <div class="book-card animate-on-scroll">
+                    <div class="book-cover">
+                        <span class="book-emoji">🗝️</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Современный детектив</span>
+                        <h3 class="book-title">Тайная история</h3>
+                        <p class="book-author">Донна Тартт</p>
+                        <div class="book-footer">
+                            <span class="book-price">710 ₽</span>
+                            <span class="book-rating">★★★★☆ 4.6</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 7 -->
+                <div class="book-card animate-on-scroll">
+                    <span class="book-badge">Хит</span>
+                    <div class="book-cover">
+                        <span class="book-emoji">🩸</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Триллер</span>
+                        <h3 class="book-title">Исчезнувшая</h3>
+                        <p class="book-author">Гиллиан Флинн</p>
+                        <div class="book-footer">
+                            <span class="book-price">560 ₽</span>
+                            <span class="book-rating">★★★★★ 4.7</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+
+                <!-- Книга 8 -->
+                <div class="book-card animate-on-scroll">
+                    <span class="book-badge">Новинка</span>
+                    <div class="book-cover">
+                        <span class="book-emoji">🔬</span>
+                    </div>
+                    <div class="book-info">
+                        <span class="book-genre">Криминальный детектив</span>
+                        <h3 class="book-title">Убийство в «Восточном экспрессе»</h3>
+                        <p class="book-author">Агата Кристи</p>
+                        <div class="book-footer">
+                            <span class="book-price">540 ₽ <span class="old-price">720 ₽</span></span>
+                            <span class="book-rating">★★★★★ 4.9</span>
+                        </div>
+                    </div>
+                    <button class="book-btn">В корзину</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ПРЕИМУЩЕСТВА -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">Преимущества</span>
+                <h2 class="section-title">Почему выбирают нас</h2>
+                <p class="section-subtitle">Мы делаем всё, чтобы ваш опыт чтения был незабываемым</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <span class="feature-icon">🚚</span>
+                    <h3>Быстрая доставка</h3>
+                    <p>Доставим книгу в любую точку города за 24 часа. По России — от 2 дней.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <span class="feature-icon">💰</span>
+                    <h3>Лучшие цены</h3>
+                    <p>Гарантируем самые выгодные цены и регулярные скидки до 50%.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <span class="feature-icon">🎁</span>
+                    <h3>Подарочная упаковка</h3>
+                    <p>Красивая подарочная упаковка бесплатно при заказе от 1000 ₽.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <span class="feature-icon">💬</span>
+                    <h3>Поддержка 24/7</h3>
+                    <p>Наши консультанты помогут подобрать идеальную книгу в любое время.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- КОНТАКТЫ -->
+    <section class="contacts" id="contacts">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-tag">Контакты</span>
+                <h2 class="section-title">Свяжитесь с нами</h2>
+                <p class="section-subtitle">Мы всегда рады помочь вам с выбором</p>
+            </div>
+            <div class="contacts-grid">
+                <div class="contacts-info animate-on-scroll">
+                    <h3>Наши <span>контакты</span></h3>
+                    <p>Посетите наш магазин или свяжитесь с нами любым удобным способом.</p>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h4>Адрес</h4>
+                            <p>г. Москва, ул. Арбат, д. 24, стр. 1</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-details">
+                            <h4>Телефон</h4>
+                            <p>+7 (495) 123-45-67</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>info@detective-books.ru</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕐</div>
+                        <div class="contact-details">
+                            <h4>Режим работы</h4>
+                            <p>Пн–Сб: 10:00–21:00, Вс: 11:00–19:00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form animate-on-scroll">
+                    <h3>Напишите нам</h3>
+                    <form onsubmit="handleSubmit(event)">
+                        <div class="form-group">
+                            <label for="name">Ваше имя</label>
+                            <input type="text" id="name" placeholder="Введите ваше имя" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="example@mail.ru" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Телефон</label>
+                            <input type="tel" id="phone" placeholder="+7 (___) ___-__-__">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Сообщение</label>
+                            <textarea id="message" placeholder="Чем мы можем помочь?" required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit">Отправить сообщение ✉️</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">🔍 ДЕТЕКТИВ</div>
+                <div class="footer-links">
+                    <a href="#hero">Главная</a>
+                    <a href="#about">О нас</a>
+                    <a href="#catalog">Каталог</a>
+                    <a href="#contacts">Контакты</a>
+                    <a href="#">Политика конфиденциальности</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link" title="Telegram">💬</a>
+                    <a href="#" class="social-link" title="VK">📘</a>
+                    <a href="#" class="social-link" title="YouTube">▶️</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Книжный магазин «Детектив». Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Навигация — эффект при скролле
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Мобильное меню
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const burger = document.getElementById('burger');
+            const overlay = document.getElementById('navOverlay');
+            navLinks.classList.toggle('open');
+            burger.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+        }
+
+        function closeMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const burger = document.getElementById('burger');
+            const overlay = document.getElementById('navOverlay');
+            navLinks.classList.remove('open');
+            burger.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Анимация при скролле (Intersection Observer)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Фильтры каталога
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Обработка формы
+        function handleSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('.form-submit');
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Отправлено!';
+            btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                e.target.reset();
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
