@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Книжный магазин «Детектив» — Тайны и загадки</title>
+    <!-- Font Awesome 6 (icons) & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Яркая цветовая схема + плавность */
+        :root {
+            --bg-body: #FFF9F0;
+            --primary: #D6402B;      /* яркий терракотово-красный */
+            --primary-dark: #B12A17;
+            --secondary: #1E2F5E;    /* глубокий синий детективный */
+            --accent: #F4B942;       /* золотисто-горчичный акцент */
+            --text-dark: #221C1A;
+            --text-light: #FEF7E6;
+            --card-bg: #FFFFFF;
+            --shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 25px 40px -12px rgba(214, 64, 43, 0.25);
+            --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 85px; /* чтобы якоря не перекрывались sticky header */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Типографика */
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2.3rem;
+            letter-spacing: -0.01em;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2.5rem;
+        }
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 70px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 4px;
+        }
+        .section {
+            padding: 80px 24px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Анимации при загрузке */
+        @keyframes fadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-section {
+            animation: fadeSlideUp 0.7s ease forwards;
+        }
+
+        /* HEADER / НАВИГАЦИЯ (sticky) */
+        .header {
+            background: rgba(255, 249, 240, 0.96);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(214, 64, 43, 0.2);
+        }
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 1rem 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        .logo i {
+            color: var(--accent);
+            margin-right: 6px;
+        }
+        .logo:hover {
+            transform: scale(1.02);
+            color: var(--primary-dark);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 1.05rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 4px 0;
+        }
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--primary);
+            transition: 0.25s ease;
+        }
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+
+        /* HERO секция */
+        .hero {
+            background: linear-gradient(125deg, #1E2F5E 0%, #D6402B 100%);
+            color: white;
+            border-radius: 0 0 50px 50px;
+            margin: 0 20px 20px 20px;
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .hero:before {
+            content: "🔍";
+            font-size: 200px;
+            opacity: 0.08;
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            transform: rotate(10deg);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 650px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: var(--secondary);
+            padding: 14px 32px;
+            font-weight: 700;
+            border-radius: 60px;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn i {
+            font-size: 1.1rem;
+        }
+        .btn:hover {
+            background: #FFCF6E;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+        }
+
+        /* О компании - яркие карточки */
+        .about-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .about-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 32px;
+            flex: 1;
+            min-width: 240px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-bottom: 4px solid var(--accent);
+        }
+        .about-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .about-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .about-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--secondary);
+        }
+
+        /* Каталог книг (карточки) */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        .book-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            cursor: default;
+            animation: fadeSlideUp 0.5s ease backwards;
+            animation-delay: calc(0.05s * var(--i, 1));
+        }
+        .book-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+        .book-cover {
+            background: linear-gradient(145deg, #F2E6D5, #EADBC5);
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        .book-card:hover .book-cover {
+            background: linear-gradient(145deg, #FFE6CC, #FFD9B5);
+        }
+        .book-info {
+            padding: 1.5rem;
+            flex: 1;
+        }
+        .book-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 0.3rem;
+            color: var(--secondary);
+        }
+        .book-author {
+            color: #5a4a42;
+            font-size: 0.9rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .rating {
+            color: var(--accent);
+            margin: 8px 0;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+        }
+        .price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0;
+        }
+        .btn-buy {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-buy:hover {
+            background: var(--primary);
+            transform: scale(0.98);
+        }
+
+        /* Контакты */
+        .contacts-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border-radius: 48px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .contact-info {
+            flex: 1;
+            min-width: 240px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.7rem;
+        }
+        .contact-item i {
+            font-size: 1.7rem;
+            width: 44px;
+            height: 44px;
+            background: rgba(214,64,43,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            color: var(--primary);
+        }
+        .contact-item strong {
+            font-weight: 700;
+            color: var(--secondary);
+            display: block;
+        }
+        .social-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 20px;
+        }
+        .social-links a {
+            background: var(--secondary);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.3rem;
+        }
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+        .map-placeholder {
+            flex: 1;
+            background: #E8DDD0;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            font-weight: 500;
+            color: var(--secondary);
+            gap: 12px;
+        }
+        .map-placeholder i {
+            font-size: 3rem;
+            color: var(--primary);
+        }
+
+        /* footer */
+        .footer {
+            background: var(--secondary);
+            color: #DDD;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 850px) {
+            .nav-container {
+                flex-direction: column;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            h2 {
+                font-size: 1.9rem;
+            }
+            .section {
+                padding: 60px 20px;
+            }
+            .contacts-wrapper {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 550px) {
+            .hero {
+                padding: 50px 20px;
+                margin: 0 12px 12px 12px;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                padding: 10px 24px;
+            }
+            .nav-links {
+                gap: 1.2rem;
+                justify-content: center;
+            }
+        }
+
+        /* плавные скролл и кастомные акценты */
+        ::selection {
+            background: var(--accent);
+            color: var(--secondary);
+        }
+        button, .btn, .book-card, .nav-links a {
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="nav-container">
+        <div class="logo">
+            <i class="fas fa-skull"></i> Детектив
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Главная</a></li>
+            <li><a href="#about">О нас</a></li>
+            <li><a href="#catalog">Книги</a></li>
+            <li><a href="#contacts">Контакты</a></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <!-- Hero раздел со слоганом -->
+    <section id="home" class="hero animate-section">
+        <h1>Раскрой тайну страницы</h1>
+        <p>Книжный магазин «Детектив» — лучшие романы, триллеры и головоломки. Интрига гарантирована!</p>
+        <a href="#catalog" class="btn"><i class="fas fa-magnifying-glass"></i> Смотреть каталог</a>
+    </section>
+
+    <!-- О компании -->
+    <section id="about" class="section animate-section">
+        <h2>О компании</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <i class="fas fa-book-open"></i>
+                <h3>10 000+ детективов</h3>
+                <p>Коллекция от классики до современных бестселлеров. Агата Кристи, Джоэль Диккер, Несбё и другие.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-trophy"></i>
+                <h3>Экспертный отбор</h3>
+                <p>Каждая книга проверяется нашими библиофилами. Только лучшие загадки и сюжеты.</p>
+            </div>
+            <div class="about-card">
+                <i class="fas fa-gift"></i>
+                <h3>Автограф-сессии</h3>
+                <p>Встречи с современными авторами детективов, клубы любителей жанра и скидки.</p>
+            </div>
+        </div>
+        <div style="margin-top: 2.5rem; background: #F7E9DA; border-radius: 36px; padding: 1.8rem; text-align: center;">
+            <i class="fas fa-quote-left" style="color: var(--primary); font-size: 2rem; opacity: 0.7;"></i>
+            <p style="font-size: 1.2rem; font-style: italic; max-width: 700px; margin: 0 auto;">«Лучший выбор для настоящего сыщика и ценителя острого сюжета» — журнал "Книжный детектив"</p>
+        </div>
+    </section>
+
+    <!-- Каталог популярных книг -->
+    <section id="catalog" class="section animate-section">
+        <h2>Популярные книги</h2>
+        <div class="catalog-grid">
+            <!-- Карточка 1 -->
+            <div class="book-card" style="--i:1">
+                <div class="book-cover">
+                    <i class="fas fa-magnifying-glass"></i>
+                </div>
+                <div class="book-info">
+                    <div class="book-title">Убийство в Восточном экспрессе</div>
+                    <div class="book-author"><i class="fas fa-feather"></i> Агата Кристи</div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <div class="price">590 ₽</div>
+                    <button class="btn-buy"><i class="fas fa-cart-plus"></i> Купить</button>
+                </div>
+            </div>
+            <!-- Карточка 2 -->
+            <div class="book-card" style="--i:2">
+                <div class="book-cover">
+                    <i class="fas fa-dog"></i>
+                </div>
+                <div class="book-info">
+                    <div class="book-title">Собака Баскервилей</div>
+                    <div class="book-author"><i class="fas fa-feather"></i> Артур Конан Дойл</div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <div class="price">520 ₽</div>
+                    <button class="btn-buy"><i class="fas fa-cart-plus"></i> Купить</button>
+                </div>
+            </div>
+            <!-- Карточка 3 -->
+            <div class="book-card" style="--i:3">
+                <div class="book-cover">
+                    <i class="fas fa-dragon"></i>
+                </div>
+                <div class="book-info">
+                    <div class="book-title">Девушка с татуировкой дракона</div>
+                    <div class="book-author"><i class="fas fa-feather"></i> Стиг Ларссон</div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <div class="price">710 ₽</div>
+                    <button class="btn-buy"><i class="fas fa-cart-plus"></i> Купить</button>
+                </div>
+            </div>
+            <!-- Карточка 4 -->
+            <div class="book-card" style="--i:4">
+                <div class="book-cover">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="book-info">
+                    <div class="book-title">Десять негритят</div>
+                    <div class="book-author"><i class="fas fa-feather"></i> Агата Кристи</div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <div class="price">640 ₽</div>
+                    <button class="btn-buy"><i class="fas fa-cart-plus"></i> Купить</button>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="#" class="btn" style="background: var(--secondary); color: white;"><i class="fas fa-arrow-right"></i> Весь каталог</a>
+        </div>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contacts" class="section animate-section">
+        <h2>Контакты</h2>
+        <div class="contacts-wrapper">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-map-pin"></i>
+                    <div><strong>Адрес</strong> г. Москва, ул. Тайная, 13, ТЦ «Шерлок»</div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <div><strong>Телефон</strong> +7 (495) 234-56-78</div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div><strong>E-mail</strong> info@detectivbook.ru</div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <div><strong>Режим работы</strong> Пн–Вс: 10:00 – 21:00</div>
+                </div>
+                <div class="social-links">
+                    <a href="#" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" aria-label="VK"><i class="fab fa-vk"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="map-placeholder">
+                <i class="fas fa-location-dot"></i>
+                <p><strong>Как нас найти</strong><br>м. «Достоевская», выход к Тайному переулку. Вывеска с лупой.</p>
+                <i class="fas fa-route" style="font-size: 1.3rem;"></i>
+                <small>☆ загадочный район книжных лавок ☆</small>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>© 2025 Книжный магазин «Детектив» — Ваш проводник в мир загадок и приключений.</p>
+    <p style="margin-top: 10px; font-size: 0.8rem;"><i class="fas fa-shield-alt"></i> Все права защищены. Только оригинальные издания.</p>
+</footer>
+
+<!-- небольшая интерактивность для кнопок "Купить" (демо-оповещение) -->
+<script>
+    (function() {
+        const buyBtns = document.querySelectorAll('.btn-buy');
+        buyBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const bookTitle = btn.closest('.book-info')?.querySelector('.book-title')?.innerText || 'книгу';
+                alert(`🕵️‍♂️ "${bookTitle}" добавлена в корзину! Раскройте эту тайну первым.`);
+            });
+        });
+        // демо для кнопки "Весь каталог"
+        const catalogBtn = document.querySelector('.section .btn');
+        if(catalogBtn && catalogBtn.innerText.includes('Весь каталог')) {
+            catalogBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('🔍 Полный каталог детективов откроется совсем скоро! Заходите в магазин.');
+            });
+        }
+    })();
+</script>
+</body>
+</html>
